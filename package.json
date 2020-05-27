@@ -4,6 +4,7 @@
   "description": "Ionicons for KUI",
   "main": "lib/dist.json",
   "scripts": {
+    "build":"node lib/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
