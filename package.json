@@ -1,14 +1,40 @@
 {
   "name": "kui-icons",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Ionicons for KUI",
-  "main": "lib/dist.json",
+  "main": "index.js",
+  "files": [
+    "lib","svg"
+  ],
   "scripts": {
-    "build":"node lib/index.js",
+    "build":"node build.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "chuchur",
+    "license": "ISC",
+    "keywords": [
+        "kui icons",
+        "kui",
+        "ui",
+        "ui component",
+        "kyui",
+        "vue",
+        "vue.js",
+        "vue2.js",
+        "component",
+        "components",
+        "framework",
+        "vue2 ui",
+        "vue2 components",
+        "ui components",
+        "pc",
+        "pc ui"
+    ],
+  "homepage": "https://k-ui.cn",
+  "bugs": {
+    "url": "https://github.com/chuchur-china/kui-icons/issues",
+    "email": "chuchur@qq.com"
+  },
   "devDependencies": {
     "cheerio": "^1.0.0-rc.3",
     "convertpath": "^1.2.8"

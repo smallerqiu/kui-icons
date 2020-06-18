@@ -73,7 +73,7 @@ const getcir = (node = []) => {
   return path.length ? path : null
 }
 
-let _path = path.join(__dirname, '../svg/')
+let _path = path.join(__dirname, './svg/')
 
 fs.readdir(_path, async function (err, files) {
   if (err) {
@@ -119,6 +119,6 @@ fs.readdir(_path, async function (err, files) {
       icons[name] = d
        */
     }
-    saveFile(path.join(__dirname, '../lib/dist.json'), icons)
+    saveFile(path.join(__dirname, './lib/dist.json'), icons)
   }
 })
