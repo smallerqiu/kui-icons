@@ -1,8 +1,8 @@
 {
   "name": "kui-icons",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "Ionicons for KUI",
-  "main": "index.js",
+  "main": "lib/kui-icons.js",
   "files": [
     "lib",
     "svg"
@@ -33,7 +33,7 @@
   ],
   "homepage": "https://k-ui.cn",
   "bugs": {
-    "url": "https://github.com/chuchur-china/kui-icons/issues",
+    "url": "https://gitee.com/chuchur/kui-icons/issues",
     "email": "chuchur@qq.com"
   },
   "devDependencies": {

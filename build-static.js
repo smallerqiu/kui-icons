@@ -13,7 +13,7 @@ webpack({
     path: path.resolve(__dirname, "./lib"),
     publicPath: "",
     filename: "kui-icons.js",
-    library: 'KuiIcons',
+    library: 'kui-icons',
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
