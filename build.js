@@ -4,15 +4,27 @@ const path = require('path')
 
 let icons = {}
 const SVGParser = require('convertpath')
+const _path = path.join(__dirname, './v5.5.0/')
 
-const readFile = (path) => {
-  return new Promise((resolve, reject) => {
-    fs.readFile(path, 'utf8', (err, data) => {
-      if (err) reject(err);
-      resolve(data)
-    })
+
+//test
+const getPath = (file) => {
+  const parse = SVGParser.parse('./v5.5.0/' + file, {
+    plugins: [
+      { convertUseToGroup: true, },
+      { convertShapeToPath: true, },
+      { removeGroups: true, },
+      { convertTransfromforPath: true, },
+      { viewBoxTransform: true, },
+    ],
+    size: 512,
   })
+  // const result = parse.toSimpleSvg()
+  // console.log(paths)
+  return parse.getPathAttributes();
 }
+
+
 const saveFile = async (path, body) => {
   return new Promise((resolve, reject) => {
     body = JSON.stringify(body)
@@ -29,96 +41,122 @@ const saveFile = async (path, body) => {
   })
 }
 
-const getpath = (node = []) => {
-  let path = []
-  for (let i = 0; i < node.length; i++) {
-    path.push(node.eq(i).attr('d'))
+const reset = (o) => {
+  let ss = ''
+  if (o.fill) {
+    ss += `fill:${o.fill};`
   }
-  return path.join(' ')
-}
-function ellipse2path(cx, cy, rx, ry) {
-  //非数值单位计算，如当宽度像100%则移除 
-  if (isNaN(cx - cy + rx - ry)) return; var path = 'M' + (cx - rx) + ' ' + cy + 'a' + rx + ' ' + ry + ' 0 1 0 ' + 2 * rx + ' 0' + 'a' + rx + ' ' + ry + ' 0 1 0 ' + (-2 * rx) + ' 0' + 'z'; return path;
-}
-
-const cir2path = (cx, cy, r) => {
-  return `M ${cx}, ${cy} m -${r}, 0 a ${r},${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 -${r * 2},0`
-  //or M cx - r, cy a r,r 0 1,0 (r * 2),0 a r,r 0 1,0 -(r * 2),0
-}
-
-const getell = (node = []) => {
-  let path = [], n;
-  for (let i = 0; i < node.length; i++) {
-    n = node.eq(i)
-    let x = n.attr('cx')
-    let y = n.attr('cy')
-    let rx = n.attr('rx')
-    let ry = n.attr('ry')
-    let p = ellipse2path(x, y, rx, ry)
-    path.push(p)
+  if (o.stroke) {
+    ss += `stroke:${o.stroke};`
   }
-  return path.length ? path : null
-}
-
-const getcir = (node = []) => {
-  let path = [], n;
-  for (let i = 0; i < node.length; i++) {
-    n = node.eq(i)
-    let x = n.attr('cx')
-    let y = n.attr('cy')
-    let r = n.attr('r')
-    let p = cir2path(x, y, r)
-    path.push(p)
+  if (o['stroke-width']) {
+    ss += `stroke-width:${parseInt(o['stroke-width'])}px;`
   }
-  return path.length ? path : null
-}
+  if (o['stroke-linecap']) {
+    ss += `stroke-linecap:${o['stroke-linecap']};`
+  }
+  if (o['stroke-linejoin']) {
+    ss += `stroke-linejoin:${o['stroke-linejoin']};`
+  }
+  if (o['stroke-miterlimit']) {
+    ss += `stroke-miterlimit:${o['stroke-miterlimit']};`
+  }
+  if (o['fill-rule']) {
+    ss += `fill-rule:${o['fill-rule']};`
+  }
 
-let _path = path.join(__dirname, './svg/')
 
-fs.readdir(_path, async function (err, files) {
-  if (err) {
-    console.log(err)
-  } else {
-    for (let i = 0; i < files.length; i++) {
-      let html = await readFile(_path + files[i])
-      let $svg = $(html)
+  if (!o.style && ss) {
+    o.style = ss
+  }
 
-      let path = $svg.find('path')
-      let d = getpath(path)
+  if (o.style) {
+    o.style = o.style.replace('#000', 'currentcolor')
 
-      let circle = $svg.find('circle')
-      let c = getcir(circle)
-      if (c) {
-        d += ' ' + c.join(' ')
-      }
-
-      let ellipse = $svg.find('ellipse')
-      let e = getell(ellipse)
-      if (e) {
-        console.log(e)
-        d += ' ' + e.join(' ')
-      }
-
-      let name = files[i].split('.')[0]
-      icons[name] = d
-
-      /**
-       *  let parse = SVGParser.parse('../svg/' + files[i], {
-        plugins: [
-          { convertUseToGroup: true, },
-          { convertShapeToPath: true, },
-          { removeGroups: true, },
-          { convertTransfromforPath: true, },
-          { viewBoxTransform: true, },
-        ],
-        size:512
-      })
-      let d = parse.toSimpleSvg()
-      d = d.match(/[^(d=")]+(?="\/>)/g)[0]
-      let name = files[i].split('.')[0]
-      icons[name] = d
-       */
+    if (o.style.indexOf('fill:none') < 0) {
+      // o.style = o.style.replace(/stroke:currentcolor;|stroke:currentcolor/, '')
+      o.style = 'fill:currentcolor;' + o.style
     }
-    saveFile(path.join(__dirname, './lib/dist.json'), icons)
   }
-})
+
+  return o;
+}
+const process = (file) => {
+
+  const paths = getPath(file)
+
+  let ds = []
+
+  if (paths.length == 1) {
+    let x = paths[0];
+    x = reset(x);
+
+    let { d, style } = x
+    let o = {}
+    o.d = d
+    if (style) {
+      o.s = style
+    }
+
+    // if (file.indexOf('outline') >= 0) {
+    //   if (!style || style.indexOf('fill') < 0) {
+    //     o.s += `fill:none;`;
+    //   }
+    // }
+    console.log(file)
+
+    ds.push(o)
+  } else if (paths.length > 1) {
+    ds = paths.reduce((n, o) => {
+      o = reset(o);
+      if (o.style) {
+        let i = n.map(a => a.s).indexOf(o.style)  // 已经存在类似的style
+        if (i >= 0) {
+          //合并path
+          n[i].d += ' ' + o.d
+        } else {
+          n.push({ d: o.d, s: o.style })
+        }
+      } else {
+        let x = n.findIndex(a => !a.s)  //已经存在没有style的 合并
+        if (x >= 0) {
+          n[x].d += ' ' + o.d
+        } else {
+          n.push({ d: o.d })
+        }
+      }
+      return n;
+    }, [])
+  }
+
+  return ds;
+}
+
+const start = () => {
+  fs.readdir(_path, async function (err, files) {
+    if (err) {
+      console.log(err)
+    } else {
+      for (let i = 0; i < files.length; i++) {
+        // if (files[i].indexOf('sharp') < 0) { //排除sharp
+        if (files[i].indexOf('sharp') < 0) { //排除sharp
+          // console.log(files[i])
+          let name = files[i].split('.')[0]
+
+          icons[name] = process(files[i])
+
+        }
+      }
+      saveFile(path.join(__dirname, './lib/dist.json'), icons)
+    }
+  })
+}
+
+
+// start();
+// return;
+
+let t = getPath('wallet.svg');
+console.log(t)
+let p = process('wallet.svg')
+console.log(p)
