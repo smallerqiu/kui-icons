@@ -153,8 +153,8 @@ const start = () => {
 }
 
 
-// start();
-// return;
+start();
+return;
 
 let t = getPath('wallet.svg');
 console.log(t)
