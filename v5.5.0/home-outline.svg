@@ -1,1 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><title>ionicons-v5-i</title><path d="M80,212V448a16,16,0,0,0,16,16h96V328a24,24,0,0,1,24-24h80a24,24,0,0,1,24,24V464h96a16,16,0,0,0,16-16V212" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><path d="M480,256,266.89,52c-5-5.28-16.69-5.34-21.78,0L32,256" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><polyline points="400 179 400 64 352 64 352 133" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/></svg>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 25.4.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 256 256" style="enable-background:new 0 0 256 256;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#231815;stroke-width:32;stroke-miterlimit:10;}
+</style>
+<path class="st0" d="M222.7,92.5l-82.9-65.8c-7.7-5.6-18.3-5.4-25.7,0.6L32.5,92.5c-4.6,3.8-7.3,9.3-7.3,15.2v115.8c0,5,4,9,9,9
+	h48.9c5,0,9-4,9-9V168c0-8.2,6.9-14.9,15.4-14.9h41.1c8.5,0,15.4,6.7,15.4,14.9v55.4c0,5,4,9,9,9h48.9c5,0,9-4,9-9V108.2
+	C230.8,102,227.8,96.2,222.7,92.5z"/>
+</svg>

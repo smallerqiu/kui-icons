@@ -71,7 +71,7 @@ const reset = (o) => {
   }
 
   if (o.style) {
-    o.style = o.style.replace('#000', 'currentcolor')
+    o.style = o.style.replace(/#000000/g, 'currentcolor').replace(/#000/g, 'currentcolor')
 
     if (o.style.indexOf('fill:none') < 0) {
       // o.style = o.style.replace(/stroke:currentcolor;|stroke:currentcolor/, '')
@@ -83,8 +83,8 @@ const reset = (o) => {
 }
 const process = (file) => {
 
+  console.log(file)
   const paths = getPath(file)
-
   let ds = []
 
   if (paths.length == 1) {
@@ -139,7 +139,7 @@ const start = () => {
     } else {
       for (let i = 0; i < files.length; i++) {
         // if (files[i].indexOf('sharp') < 0) { //排除sharp
-        if (files[i].indexOf('sharp') < 0) { //排除sharp
+        if (files[i].indexOf('sharp') < 0 && files[i] != '.DS_Store') { //排除sharp
           // console.log(files[i])
           let name = files[i].split('.')[0]
 
