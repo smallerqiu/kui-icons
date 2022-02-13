@@ -14,6 +14,7 @@ webpack({
     publicPath: "",
     filename: "kui-icons.js",
     library: 'kui-icons',
+    globalObject: 'this',
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
