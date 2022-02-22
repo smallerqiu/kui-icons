@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="70px" height="70px" viewBox="0 0 70 70" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>数据分析@2x</title>
+    <defs>
+        <linearGradient x1="0%" y1="0%" x2="100%" y2="91.3526667%" id="linearGradient-1">
+            <stop stop-color="#FCFCFF" offset="0%"></stop>
+            <stop stop-color="#E7E8FF" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="1.0-1.1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="关于" transform="translate(-527.000000, -622.000000)">
+            <g id="数据分析" transform="translate(527.000000, 622.000000)">
+                <rect id="矩形" fill="url(#linearGradient-1)" x="0" y="0" width="70" height="70" rx="10"></rect>
+                <rect id="矩形" fill="#6642FF" x="18" y="41.7647059" width="3" height="13.2352941" rx="1.5"></rect>
+                <rect id="矩形备份-16" fill="#6642FF" x="28" y="34.76" width="3" height="20.24" rx="1.5"></rect>
+                <rect id="矩形备份-22" fill="#6642FF" x="38" y="40" width="3" height="15" rx="1.5"></rect>
+                <rect id="矩形备份-23" fill="#6642FF" x="48" y="32" width="3" height="23" rx="1.5"></rect>
+                <polyline id="路径-34" stroke="#31F9EC" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="19.5 35 29.4106911 25.6725155 37.5875518 33.2207068 49.5 19.9662192"></polyline>
+                <path d="M49.5,18 C50.2796961,18 50.9204487,18.5948881 50.9931334,19.35554 L51,19.5 L51,27.5 C51,28.3284271 50.3284271,29 49.5,29 C48.7203039,29 48.0795513,28.4051119 48.0068666,27.64446 L48,27.5 L48,21 L41.5,21 C40.7203039,21 40.0795513,20.4051119 40.0068666,19.64446 L40,19.5 C40,18.7203039 40.5948881,18.0795513 41.35554,18.0068666 L41.5,18 L49.5,18 Z" id="路径" fill="#31F9EC" fill-rule="nonzero"></path>
+            </g>
+        </g>
+    </g>
+</svg>

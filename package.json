@@ -41,9 +41,14 @@
     "babel-loader": "^8.1.0",
     "chalk": "^4.1.0",
     "cheerio": "^1.0.0-rc.5",
-    "convertpath": "^1.2.8",
+    "convertpath": "^1.3.0",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.44.1",
     "webpackbar": "^4.0.0"
+  },
+  "dependencies": {
+    "html-minifier": "^4.0.0",
+    "juice": "^8.0.0",
+    "xmldom": "^0.6.0"
   }
 }

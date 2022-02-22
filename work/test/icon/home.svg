@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>首页@2x</title>
+    <g id="1.5" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="导航" transform="translate(-40.000000, -303.000000)">
+            <g id="首页" transform="translate(40.000000, 303.000000)">
+                <rect id="矩形备份-29" stroke-opacity="0.01" stroke="#FFFFFF" x="0.5" y="0.5" width="39" height="39"></rect>
+                <g id="编组-70" transform="translate(1.000000, 1.000000)">
+                    <g id="矩形-3" fill="#6642FF">
+                        <path d="M1.99076552,9.95464982 L17.1042539,1.17503004 C18.3537489,0.449182271 19.8975898,0.453678673 21.1428357,1.18679232 L36.0293473,9.95092871 C37.2503859,10.6697908 38,11.9809875 38,13.3979201 L38,34 C38,36.209139 36.209139,38 34,38 L4,38 C1.790861,38 3.75067146e-15,36.209139 0,34 L0,13.4134035 C7.13635567e-16,11.9881529 0.758367879,10.6705655 1.99076552,9.95464982 Z" id="矩形"></path>
+                    </g>
+                    <circle id="椭圆形" fill="#FFFFFF" cx="19" cy="24" r="6"></circle>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
