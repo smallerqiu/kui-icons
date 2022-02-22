@@ -53,7 +53,8 @@ const reset = (o) => {
     ss += `stroke:${o.stroke};`
   }
   if (o['stroke-width']) {
-    ss += `stroke-width:${parseInt(o['stroke-width'])}px;`
+    // ss += `stroke-width:${parseInt(o['stroke-width'])}px;`
+    ss += `stroke-width:${(o['stroke-width'])}px;`
   }
   if (o['stroke-linecap']) {
     ss += `stroke-linecap:${o['stroke-linecap']};`
@@ -74,7 +75,7 @@ const reset = (o) => {
   }
 
   if (o.style) {
-    o.style = o.style.replace(/#000000/g, 'currentcolor').replace(/#000/g, 'currentcolor')
+    o.style = o.style.replace(/#6642FF/g, 'currentcolor')//.replace(/#000/g, 'currentcolor')
 
     if (o.style.indexOf('fill:none') < 0) {
       // o.style = o.style.replace(/stroke:currentcolor;|stroke:currentcolor/, '')
@@ -169,10 +170,10 @@ const start = () => {
 }
 
 
-start();
-return;
+// start();
+// return;
 
-let t = getPath('token.svg');
-console.log(t)
-// let p = process('wallet.svg')
-// console.log(p)
+// let t = getPath('token.svg');
+// console.log(t)
+let p = process('menu.svg')
+console.log(p)
