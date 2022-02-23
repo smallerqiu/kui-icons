@@ -170,8 +170,8 @@ const start = () => {
 }
 
 
-// start();
-// return;
+start();
+return;
 
 // let t = getPath('token.svg');
 // console.log(t)
