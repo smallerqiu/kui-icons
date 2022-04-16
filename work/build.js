@@ -7,6 +7,7 @@ const SVGParser = require('../bin/index')
 // const SVGParser = require('convertpath')
 const _path = path.join(__dirname, './test/icon/')
 
+const size = 512
 
 //test
 const getPath = (file) => {
@@ -19,7 +20,7 @@ const getPath = (file) => {
       { convertTransfromforPath: true, },
       { viewBoxTransform: true, },
     ],
-    size: 512,
+    size,
   })
   // const result = parse.toSimpleSvg()
   // console.log(paths)
@@ -44,43 +45,46 @@ const saveFile = async (path, body, json = true) => {
   })
 }
 
+const sty2obj = stl => {
+  stl = stl.replace(/ /g, '')
+  let s = stl.split(';')
+  let obj = {}
+  s.map(atr => {
+    let [k, v] = atr.split(':')
+    if (k) {
+      obj[k] = v
+    }
+  })
+  return obj
+}
+const obj2sty = obj => {
+  let sty = ''
+  for(k in obj){
+    sty+=`${k}:${obj[k]};`
+  }
+  return sty
+}
+
 const reset = (o) => {
-  let ss = ''
-  if (o.fill) {
-    ss += `fill:${o.fill};`
-  }
-  if (o.stroke) {
-    ss += `stroke:${o.stroke};`
-  }
-  if (o['stroke-width']) {
-    // ss += `stroke-width:${parseInt(o['stroke-width'])}px;`
-    ss += `stroke-width:${(o['stroke-width'])}px;`
-  }
-  if (o['stroke-linecap']) {
-    ss += `stroke-linecap:${o['stroke-linecap']};`
-  }
-  if (o['stroke-linejoin']) {
-    ss += `stroke-linejoin:${o['stroke-linejoin']};`
-  }
-  if (o['stroke-miterlimit']) {
-    ss += `stroke-miterlimit:${o['stroke-miterlimit']};`
-  }
-  if (o['fill-rule']) {
-    ss += `fill-rule:${o['fill-rule']};`
-  }
-
-
-  if (!o.style && ss) {
-    o.style = ss
-  }
 
   if (o.style) {
-    o.style = o.style.replace(/#6642FF/g, 'currentcolor')//.replace(/#000/g, 'currentcolor')
+    // o.style = o.style.replace(/#6642FF/g, 'currentcolor')//.replace(/#000/g, 'currentcolor')
 
-    if (o.style.indexOf('fill:none') < 0) {
-      // o.style = o.style.replace(/stroke:currentcolor;|stroke:currentcolor/, '')
-      o.style = 'fill:currentcolor;' + o.style
+    // if (o.style.indexOf('fill:none') < 0) {
+    // o.style = o.style.replace(/stroke:currentcolor;|stroke:currentcolor/, '')
+    // o.style = 'fill:currentcolor;' + o.style
+    // }
+    let obj = sty2obj(o.style)
+    // console.log(obj)
+    if (obj.fill != 'none') {
+      obj.fill = 'currentcolor'
     }
+    if (obj.stroke != 'none') {
+      obj.stroke = 'currentcolor'
+    }
+    // console.log(obj2sty(obj))
+    let sty = obj2sty(obj)
+    o.style = sty
   }
 
   return o;
@@ -149,9 +153,9 @@ const start = () => {
           let name = files[i].split('.')[0]
 
           let str = process(files[i])
-          let svg = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">'
+          let svg = `<svg version="1.1" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">`
           let paths = '';
-          let symbol = '<symbol id="' + name + '" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">'
+          let symbol = `<symbol id="${name}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">`
           str.forEach(x => {
             paths += '<path d="' + x.d + '" style="' + x.s + '"/>'
             // console.log(x)

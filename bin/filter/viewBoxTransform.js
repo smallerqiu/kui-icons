@@ -5,6 +5,27 @@ const transformPath = pathD => svgpath(pathD)
 
 let VIEWBox = [0, 0, 1024, 1024]
 
+const sty2obj = stl => {
+  stl = stl.replace(/ /g, '')
+  let s = stl.split(';')
+  let obj = {}
+  s.map(atr => {
+    let [k, v] = atr.split(':')
+    if (k) {
+      obj[k] = v
+    }
+  })
+  return obj
+}
+
+const obj2sty = obj => {
+  let sty = ''
+  for (k in obj) {
+    sty += `${k}:${obj[k]};`
+  }
+  return sty
+}
+
 /**
  * transNode 递归遍历变换 path d值
  * @param {*} node
@@ -26,10 +47,20 @@ const transNode = (Node, tranX, tranY, percent) => {
         }
 
         // deal with stroke-width
+        let sty = node.getAttribute('style')
         if (node.hasAttribute('stroke-width')) {
-          const width = node.getAttribute('stroke-width')
-          node.setAttribute('stroke-width', (width * percent).toFixed(2))
+          const width = node.getAttribute('stroke-width') * percent
+          node.setAttribute('stroke-width', width)//.toFixed(2))
         }
+
+        if (sty) {
+          let obj = sty2obj(sty)
+          if (obj['stroke-width']) {
+            obj['stroke-width'] *= percent
+          }
+          node.setAttribute('style', obj2sty(obj))
+        }
+
       }
     } else if (node.hasChildNodes()) {
       transNode(node, tranX, tranY, percent)
@@ -45,7 +76,6 @@ const viewBoxTransform = (Doc, size, center) => {
     Doc.documentElement.getAttribute('viewbox') ||
     Doc.documentElement.getAttribute('viewBox')
   viewBox = viewBox.split(/\s+|,/).filter(t => t)
-
   const xScale = size / viewBox[2]
   const yScale = size / viewBox[3]
 

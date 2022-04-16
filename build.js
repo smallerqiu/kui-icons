@@ -154,9 +154,9 @@ const start = () => {
 
 
 start();
-return;
+// return;
 
-let t = getPath('wallet.svg');
-console.log(t)
-let p = process('wallet.svg')
-console.log(p)
+// let t = getPath('wallet.svg');
+// console.log(t)
+// let p = process('wallet.svg')
+// console.log(p)
