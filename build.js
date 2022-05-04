@@ -3,9 +3,30 @@ const fs = require('fs')
 const path = require('path')
 
 let icons = {}
-const SVGParser = require('convertpath')
+const SVGParser = require('./bin/index')
 const _path = path.join(__dirname, './v5.5.0/')
 
+const size = 512
+
+const sty2obj = stl => {
+  stl = stl.replace(/ /g, '')
+  let s = stl.split(';')
+  let obj = {}
+  s.map(atr => {
+    let [k, v] = atr.split(':')
+    if (k) {
+      obj[k] = v
+    }
+  })
+  return obj
+}
+const obj2sty = obj => {
+  let sty = ''
+  for (k in obj) {
+    sty += `${k}:${obj[k]};`
+  }
+  return sty
+}
 
 //test
 const getPath = (file) => {
@@ -17,7 +38,7 @@ const getPath = (file) => {
       { convertTransfromforPath: true, },
       { viewBoxTransform: true, },
     ],
-    size: 512,
+    size,
   })
   // const result = parse.toSimpleSvg()
   // console.log(paths)
@@ -25,9 +46,9 @@ const getPath = (file) => {
 }
 
 
-const saveFile = async (path, body) => {
+const saveFile = async (path, body, json = true) => {
   return new Promise((resolve, reject) => {
-    body = JSON.stringify(body)
+    body = json ? JSON.stringify(body) : body
     fs.writeFile(path, body, async err => {
       if (err) {
         await logs('保存文件:' + path + ' 失败')
@@ -65,22 +86,27 @@ const reset = (o) => {
     ss += `fill-rule:${o['fill-rule']};`
   }
 
-
-  if (!o.style && ss) {
-    o.style = ss
+  if (!o.style) {
+    o.style = ss || 'fill:currentcolor;'
   }
 
   if (o.style) {
-    o.style = o.style.replace(/#000000/g, 'currentcolor').replace(/#000/g, 'currentcolor')
-
-    if (o.style.indexOf('fill:none') < 0) {
-      // o.style = o.style.replace(/stroke:currentcolor;|stroke:currentcolor/, '')
-      o.style = 'fill:currentcolor;' + o.style
+    let obj = sty2obj(o.style)
+    // console.log(obj)
+    if (obj.fill && obj.fill != 'none') {
+      obj.fill = 'currentcolor'
     }
+    if (obj.stroke && obj.stroke != 'none') {
+      obj.stroke = 'currentcolor'
+    }
+    // console.log(obj2sty(obj))
+    let sty = obj2sty(obj)
+    o.style = sty
   }
 
   return o;
 }
+
 const process = (file) => {
 
   console.log(file)
@@ -103,7 +129,7 @@ const process = (file) => {
     //     o.s += `fill:none;`;
     //   }
     // }
-    console.log(file)
+    // console.log(file)
 
     ds.push(o)
   } else if (paths.length > 1) {
@@ -137,17 +163,34 @@ const start = () => {
     if (err) {
       console.log(err)
     } else {
+      let root = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">'
+
       for (let i = 0; i < files.length; i++) {
         // if (files[i].indexOf('sharp') < 0) { //排除sharp
         if (files[i].indexOf('sharp') < 0 && files[i] != '.DS_Store') { //排除sharp
           // console.log(files[i])
           let name = files[i].split('.')[0]
 
-          icons[name] = process(files[i])
+          let str = process(files[i])
+
+          icons[name] = str
+
+          let paths = '';
+          let symbol = `<symbol id="${name}" viewBox="0 0 ${size} ${size}">`
+          // let symbol = `<symbol id="${name}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">`
+          str.forEach(x => {
+            paths += `<path d="${x.d}" ${x.s ? 'style="' + x.s + '"' : ''}/>`
+            // console.log(x)
+          })
+
+          root += symbol + paths + '</symbol>'
 
         }
       }
+      root += '</svg>'
+
       saveFile(path.join(__dirname, './lib/dist.json'), icons)
+      saveFile(path.join(__dirname, './lib/sprite.svg'), root, false)
     }
   })
 }

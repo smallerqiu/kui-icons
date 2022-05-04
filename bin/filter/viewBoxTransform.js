@@ -49,14 +49,14 @@ const transNode = (Node, tranX, tranY, percent) => {
         // deal with stroke-width
         let sty = node.getAttribute('style')
         if (node.hasAttribute('stroke-width')) {
-          const width = node.getAttribute('stroke-width') * percent
+          const width = parseFloat(node.getAttribute('stroke-width'))* percent
           node.setAttribute('stroke-width', width)//.toFixed(2))
         }
 
         if (sty) {
           let obj = sty2obj(sty)
           if (obj['stroke-width']) {
-            obj['stroke-width'] *= percent
+            obj['stroke-width'] =parseFloat(obj['stroke-width'] )* percent
           }
           node.setAttribute('style', obj2sty(obj))
         }

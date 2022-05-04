@@ -57,16 +57,44 @@ const sty2obj = stl => {
   })
   return obj
 }
+
 const obj2sty = obj => {
   let sty = ''
-  for(k in obj){
-    sty+=`${k}:${obj[k]};`
+  for (k in obj) {
+    sty += `${k}:${obj[k]};`
   }
   return sty
 }
 
 const reset = (o) => {
+  // console.log(o)
+  let ss = ''
+  if (o.fill) {
+    ss += `fill:${o.fill};`
+  }
+  if (o.stroke) {
+    ss += `stroke:${o.stroke};`
+  }
+  if (o['stroke-width']) {
+    ss += `stroke-width:${parseInt(o['stroke-width'])}px;`
+  }
+  if (o['stroke-linecap']) {
+    ss += `stroke-linecap:${o['stroke-linecap']};`
+  }
+  if (o['stroke-linejoin']) {
+    ss += `stroke-linejoin:${o['stroke-linejoin']};`
+  }
+  if (o['stroke-miterlimit']) {
+    ss += `stroke-miterlimit:${o['stroke-miterlimit']};`
+  }
+  if (o['fill-rule']) {
+    ss += `fill-rule:${o['fill-rule']};`
+  }
 
+  if (!o.style) {
+    o.style = ss || 'fill:currentcolor;'
+  }
+  
   if (o.style) {
     // o.style = o.style.replace(/#6642FF/g, 'currentcolor')//.replace(/#000/g, 'currentcolor')
 
@@ -76,10 +104,10 @@ const reset = (o) => {
     // }
     let obj = sty2obj(o.style)
     // console.log(obj)
-    if (obj.fill != 'none') {
+    if (obj.fill && obj.fill != 'none') {
       obj.fill = 'currentcolor'
     }
-    if (obj.stroke != 'none') {
+    if (obj.strike && obj.stroke != 'none') {
       obj.stroke = 'currentcolor'
     }
     // console.log(obj2sty(obj))
@@ -111,7 +139,7 @@ const process = (file) => {
     //     o.s += `fill:none;`;
     //   }
     // }
-    console.log(file)
+    // console.log(file)
 
     ds.push(o)
   } else if (paths.length > 1) {
@@ -157,7 +185,7 @@ const start = () => {
           let paths = '';
           let symbol = `<symbol id="${name}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">`
           str.forEach(x => {
-            paths += '<path d="' + x.d + '" style="' + x.s + '"/>'
+            paths += `<path d="${x.d}" ${x.s ? 'style="' + x.s + '"' : ''}/>`
             // console.log(x)
           })
           svg += paths + '</svg>'
@@ -175,9 +203,9 @@ const start = () => {
 
 
 start();
-return;
+// return;
 
 // let t = getPath('token.svg');
 // console.log(t)
-let p = process('menu.svg')
-console.log(p)
+// let p = process('menu.svg')
+// console.log(p)
