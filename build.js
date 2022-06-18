@@ -4,7 +4,7 @@ const path = require('path')
 
 let icons = {}
 const SVGParser = require('./bin/index')
-const _path = path.join(__dirname, './v5.5.0/')
+const _path = path.join(__dirname, './light/')
 
 const size = 512
 
@@ -30,7 +30,7 @@ const obj2sty = obj => {
 
 //test
 const getPath = (file) => {
-  const parse = SVGParser.parse('./v5.5.0/' + file, {
+  const parse = SVGParser.parse('./light/' + file, {
     plugins: [
       { convertUseToGroup: true, },
       { convertShapeToPath: true, },
@@ -93,10 +93,11 @@ const reset = (o) => {
   if (o.style) {
     let obj = sty2obj(o.style)
     // console.log(obj)
-    if (obj.fill && obj.fill != 'none') {
+    let { fill, stroke } = obj
+    if ((fill || /#000/.test(fill)) && fill != 'none') {
       obj.fill = 'currentcolor'
     }
-    if (obj.stroke && obj.stroke != 'none') {
+    if ((stroke || /#000/.test(fill)) && stroke != 'none') {
       obj.stroke = 'currentcolor'
     }
     // console.log(obj2sty(obj))
@@ -169,10 +170,9 @@ const start = () => {
         // if (files[i].indexOf('sharp') < 0) { //排除sharp
         if (files[i].indexOf('sharp') < 0 && files[i] != '.DS_Store') { //排除sharp
           // console.log(files[i])
-          let name = files[i].split('.')[0]
-
+          let name = '-' + files[i].split('.')[0]
+          name = name.replace(/-(\w)/g, ($0, $1) => $1.toUpperCase())
           let str = process(files[i])
-
           icons[name] = str
 
           let paths = '';
@@ -189,8 +189,15 @@ const start = () => {
       }
       root += '</svg>'
 
-      saveFile(path.join(__dirname, './lib/dist.json'), icons)
-      saveFile(path.join(__dirname, './lib/sprite.svg'), root, false)
+      // await saveFile(path.join(__dirname, './lib/dist.json'), icons)
+      let str = JSON.stringify(icons)
+      let ds = 'let paths = ' + str + ';\n';
+      ds += 'let icons = { ...paths };\n'
+      ds += 'export default icons'
+
+      await saveFile(path.join(__dirname, './lib/dist.js'), ds, false)
+
+      await saveFile(path.join(__dirname, './lib/sprite.svg'), root, false)
     }
   })
 }

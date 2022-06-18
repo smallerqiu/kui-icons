@@ -1,13 +1,15 @@
 const webpack = require('webpack')
 const chalk = require('chalk')
 const path = require('path')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const WebpackBar = require('webpackbar')
+const TerserPlugin = require('terser-webpack-plugin');  //for webpack 5
+const pkg = require('./package.json');
 
 webpack({
   mode: 'production',
   entry: {
-    main: path.resolve(__dirname, './index.js')
+    main: path.resolve(__dirname, './lib/dist.js')
   },
   output: {
     path: path.resolve(__dirname, "./lib"),
@@ -30,19 +32,39 @@ webpack({
   },
   optimization: {
     minimizer: [
-      new UglifyJsPlugin({
-        uglifyOptions: {
-          cache: true,
-          parallel: true,
-          sourceMap: true,
-          uglifyOptions: {
-            warnings: false,
+      // new UglifyJsPlugin({
+      //   uglifyOptions: {
+      //     cache: true,
+      //     parallel: true,
+      //     sourceMap: true,
+      //     uglifyOptions: {
+      //       warnings: false,
+      //     },
+      //   }
+      // }),
+      new TerserPlugin({
+        // terserOptions: {
+        cache: true,
+        parallel: true,
+        sourceMap: false,
+        terserOptions: {
+          output: {
+            // comments: /kui-vue/i,
           },
-        }
+          compress: {
+            pure_funcs: ["console.log"]
+          }
+        },
+        extractComments: false,
+        // }
       }),
     ]
   },
   plugins: [
+    new webpack.BannerPlugin(`${pkg.name} v${pkg.version} 
+  Copyright 2017-present, kui-icons.
+  All rights reserved.
+  Author: chuchur@qq.com / www.chuchur.com`),
     new WebpackBar({
       name: '🚙  build kui-icons ....',
       color: 'green',

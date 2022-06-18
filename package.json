@@ -1,6 +1,6 @@
 {
   "name": "kui-icons",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Ionicons for KUI",
   "main": "lib/kui-icons.js",
   "files": [
@@ -10,6 +10,8 @@
   ],
   "scripts": {
     "build": "node build.js",
+    "buildicon": "node build-static.js",
+    "buildall": "node build.js && node build-static.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "chuchur",
@@ -51,6 +53,7 @@
     "html-minifier": "^4.0.0",
     "juice": "^8.0.0",
     "svgpath": "^2.5.0",
+    "terser-webpack-plugin": "^4.2.3",
     "xmldom": "^0.6.0"
   }
 }

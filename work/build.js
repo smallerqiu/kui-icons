@@ -5,13 +5,13 @@ const path = require('path')
 let icons = {}
 const SVGParser = require('../bin/index')
 // const SVGParser = require('convertpath')
-const _path = path.join(__dirname, './test/icon/')
+const _path = path.join(__dirname, './controls/')
 
 const size = 512
 
 //test
 const getPath = (file) => {
-  const parse = SVGParser.parse((path.join(__dirname, './test/icon/' + file)), {
+  const parse = SVGParser.parse((path.join(__dirname, './controls/' + file)), {
     plugins: [
       { convertUseToGroup: true, },
       { convertShapeToPath: true, },
@@ -94,7 +94,7 @@ const reset = (o) => {
   if (!o.style) {
     o.style = ss || 'fill:currentcolor;'
   }
-  
+
   if (o.style) {
     // o.style = o.style.replace(/#6642FF/g, 'currentcolor')//.replace(/#000/g, 'currentcolor')
 
@@ -104,10 +104,11 @@ const reset = (o) => {
     // }
     let obj = sty2obj(o.style)
     // console.log(obj)
-    if (obj.fill && obj.fill != 'none') {
+    let { fill, stroke } = obj
+    if ((fill || /#000/.test(fill)) && fill != 'none') {
       obj.fill = 'currentcolor'
     }
-    if (obj.strike && obj.stroke != 'none') {
+    if ((stroke || /#000/.test(fill)) && stroke != 'none') {
       obj.stroke = 'currentcolor'
     }
     // console.log(obj2sty(obj))
@@ -192,7 +193,7 @@ const start = () => {
 
           root += symbol + paths + '</symbol>'
 
-          saveFile(path.join(__dirname, './test/ok/' + files[i]), svg, false)
+          // saveFile(path.join(__dirname, './test/ok/' + files[i]), svg, false)
         }
       }
       root += '</svg>'
