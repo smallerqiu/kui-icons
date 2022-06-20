@@ -165,7 +165,7 @@ const start = () => {
       console.log(err)
     } else {
       let root = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">'
-
+      let md = ''
       for (let i = 0; i < files.length; i++) {
         // if (files[i].indexOf('sharp') < 0) { //排除sharp
         if (files[i].indexOf('sharp') < 0 && files[i] != '.DS_Store') { //排除sharp
@@ -174,7 +174,7 @@ const start = () => {
           name = name.replace(/-(\w)/g, ($0, $1) => $1.toUpperCase())
           let str = process(files[i])
           icons[name] = str
-
+          md += `export let ${name} = ${JSON.stringify(str)}\n`
           let paths = '';
           let symbol = `<symbol id="${name}" viewBox="0 0 ${size} ${size}">`
           // let symbol = `<symbol id="${name}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">`
@@ -190,11 +190,11 @@ const start = () => {
       root += '</svg>'
 
       // await saveFile(path.join(__dirname, './lib/dist.json'), icons)
-      let str = JSON.stringify(icons)
-      let ds = 'module.exports = ' + str + '';
+      // let str = JSON.stringify(icons)
+      // let ds = 'module.exports = ' + str + '';
       // ds += 'export default paths'
 
-      await saveFile(path.join(__dirname, './lib/dist.js'), ds, false)
+      await saveFile(path.join(__dirname, './lib/dist.js'), md, false)
 
       await saveFile(path.join(__dirname, './lib/sprite.svg'), root, false)
     }
