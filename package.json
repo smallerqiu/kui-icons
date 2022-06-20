@@ -2,10 +2,10 @@
   "name": "kui-icons",
   "version": "4.0.0",
   "description": "Ionicons for KUI",
-  "main": "lib/kui-icons.js",
+  "main": "lib/dist.js",
   "files": [
     "lib",
-    "v5.5.0",
+    "light",
     "bin"
   ],
   "scripts": {

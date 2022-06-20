@@ -191,9 +191,8 @@ const start = () => {
 
       // await saveFile(path.join(__dirname, './lib/dist.json'), icons)
       let str = JSON.stringify(icons)
-      let ds = 'let paths = ' + str + ';\n';
-      ds += 'let icons = { ...paths };\n'
-      ds += 'export default icons'
+      let ds = 'module.exports = ' + str + '';
+      // ds += 'export default paths'
 
       await saveFile(path.join(__dirname, './lib/dist.js'), ds, false)
 
