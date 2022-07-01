@@ -1,1 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><title>ionicons-v5-g</title><path d="M368,192H352V112a96,96,0,1,0-192,0v80H144a64.07,64.07,0,0,0-64,64V432a64.07,64.07,0,0,0,64,64H368a64.07,64.07,0,0,0,64-64V256A64.07,64.07,0,0,0,368,192Zm-48,0H192V112a64,64,0,1,1,128,0Z"/></svg>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 26.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<path d="M383.5,175h-31v-46c0-53-38-96-91-96s-102,43-102,96v46h-31c-35.3,0-64,28.7-64,64v176c0,35.3,28.7,64,64,64h255
+	c35.3,0,64-28.7,64-64V239C447.5,203.7,418.8,175,383.5,175z M320,174.9H192l0-46.9c0-35.3,28.7-64,64-64c35.3,0,64,28.7,64,64
+	L320,174.9z"/>
+</svg>
