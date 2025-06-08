@@ -1,6 +1,6 @@
 {
   "name": "kui-icons",
-  "version": "4.1.4",
+  "version": "4.1.5",
   "description": "Ionicons for KUI",
   "main": "lib/dist.js",
   "files": [
