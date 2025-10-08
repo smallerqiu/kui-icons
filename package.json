@@ -1,6 +1,6 @@
 {
   "name": "kui-icons",
-  "version": "4.1.5",
+  "version": "4.1.6",
   "description": "Ionicons for KUI",
   "main": "lib/dist.js",
   "files": [
@@ -42,15 +42,15 @@
   "devDependencies": {
     "@babel/core": "^7.11.6",
     "babel-loader": "^8.1.0",
-    "chalk": "^4.1.0",
-    "cheerio": "^1.0.0-rc.5",
+    "chalk": "^5.6.2",
+    "cheerio": "^1.1.2",
     "convertpath": "^1.3.0",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.44.1",
     "webpackbar": "^4.0.0",
     "html-minifier": "^4.0.0",
-    "juice": "^8.0.0",
-    "svgpath": "^2.5.0",
+    "juice": "^11.0.3",
+    "svgpath": "^2.6.0",
     "terser-webpack-plugin": "^4.2.3",
     "xmldom": "^0.6.0"
   }
