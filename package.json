@@ -28,13 +28,16 @@
     "email": "smallerqiu@gmail.com"
   },
   "devDependencies": {
-    "rollup": "^4.57.1",
-    "@rollup/plugin-commonjs": "^29.0.0",
-    "@rollup/plugin-terser": "^0.4.4"
+    "@rollup/plugin-commonjs": "^29.0.2",
+    "@rollup/plugin-terser": "^1.0.0",
+    "@rollup/plugin-typescript": "^12.3.0",
+    "rollup": "^4.59.0",
+    "rollup-plugin-dts": "^6.4.0",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "jsdom": "^27.4.0",
     "fast-glob": "^3.3.3",
+    "jsdom": "^29.0.1",
     "svg-pathdata": "^8.0.0"
   },
   "type": "module"
