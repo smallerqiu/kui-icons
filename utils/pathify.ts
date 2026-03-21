@@ -1,9 +1,9 @@
 import path from "path";
 import fs from "fs";
-import { getGroupedPathArray, formatStyleAttribute } from "./parse.js";
+import { getGroupedPathArray, formatStyleAttribute, SVGGroupedItem } from "./parse";
 import glob from "fast-glob";
 
-const toPascalCase = (str = "") => {
+const toPascalCase = (str: string = ""): string => {
   return str
     .split("-")
     .filter((word) => word.length > 0)
@@ -11,23 +11,26 @@ const toPascalCase = (str = "") => {
     .join("");
 };
 
-export const generate = (inputPath) => {
-  const pathList = [];
-  const spriteList = [];
+export interface GenerateResult {
+  pathList: string[];
+  spriteList: string[];
+}
+
+export const generate = (inputPath: string): GenerateResult => {
+  const pathList: string[] = [];
+  const spriteList: string[] = [];
   const matches = glob.sync(inputPath);
 
   for (const file of matches) {
-    // console.log(file);
-    // const parts = file.split(path.sep);
     const name = path.parse(file).name;
     const pascalName = toPascalCase(name);
 
     const svgContent = fs.readFileSync(file, "utf-8");
-    const array = getGroupedPathArray(svgContent);
-    // console.log(array);
+    const array: SVGGroupedItem[] = getGroupedPathArray(svgContent);
 
-    let items = [];
-    let paths = [];
+    const items: string[] = [];
+    const paths: string[] = [];
+
     array.forEach((item) => {
       let { fill = "", stroke = "" } = item.styles;
 
@@ -37,17 +40,20 @@ export const generate = (inputPath) => {
       if ((fill && fill !== "none") || Object.keys(item.styles).length === 0) {
         item.styles.fill = "currentcolor";
       }
-      let style = formatStyleAttribute(item.styles);
+
+      const style = formatStyleAttribute(item.styles);
       items.push(`{d: "${item.d}", s: "${style}"}`);
       paths.push(`<path d="${item.d}" style="${style}" />`);
     });
+
     pathList.push(`export const ${pascalName} = [${items}]`);
     spriteList.push(
-      `<symbol id="${pascalName}" viewBox="0 0 512 512">${paths.join("")}</symbol>`,
+      `<symbol id="${pascalName}" viewBox="0 0 512 512">${paths.join("")}</symbol>`
     );
-    // console.log(pathList);
+
     console.log(`output: ${pascalName}`);
   }
+
   return {
     pathList,
     spriteList,

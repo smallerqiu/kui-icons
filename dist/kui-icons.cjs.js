@@ -1,5 +1,5 @@
 /*!
- * kui-icons v4.2.0
+ * kui-icons v4.3.0
  * Copyright 2017-present, kui-icons.
  * All rights reserved.
  * Homepage: https://k-ui.cn

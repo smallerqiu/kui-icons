@@ -1,7 +1,6 @@
-
-import pkg from './package.json'
-import terser from '@rollup/plugin-terser'
-import commonjs from '@rollup/plugin-commonjs'
+import pkg from './package.json' with { type: 'json' };
+import terser from '@rollup/plugin-terser';
+import commonjs from '@rollup/plugin-commonjs';
 
 const bannerText = `/*!
  * ${pkg.name} v${pkg.version}
@@ -9,8 +8,7 @@ const bannerText = `/*!
  * All rights reserved.
  * Homepage: https://k-ui.cn
  * Author: Qiu / https://chuchur.com
- */\n`
-
+ */\n`;
 
 export default [
   {
@@ -41,4 +39,4 @@ export default [
       terser(),
     ]
   },
-]
+];
