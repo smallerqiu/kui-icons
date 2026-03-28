@@ -1,5 +1,4 @@
 import fs from "fs";
-import path from "path";
 import { generate, GenerateResult } from "./utils/pathify";
 
 const { spriteList, pathList }: GenerateResult = generate("./source/*.svg");

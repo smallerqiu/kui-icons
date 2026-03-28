@@ -23,13 +23,11 @@ export interface SVGAttributes {
 
 class SVGStyleExtractor {
   private size: number;
-  private svgContent: string;
   public doc: Document;
   private cssRules: Record<string, Record<string, string>>;
 
   constructor(svgContent: string, size: number = 512) {
     this.size = size;
-    this.svgContent = svgContent;
     const dom = new JSDOM(svgContent);
     this.doc = dom.window.document;
     this.cssRules = this.extractCSSRules();
@@ -254,7 +252,8 @@ class SVGStyleExtractor {
     return shapes.filter((shape) => shape.d && shape.d.trim());
   }
 
-  getMergedPaths(size?: number | null): SVGGroupedItem[] {
+  getMergedPaths(): SVGGroupedItem[] {
+    const size = this.size
     const allShapes = this.getAllShapesAsPaths();
 
     const groupedShapes: Record<string, { styles: Record<string, string>; paths: string[] }> = {};
@@ -361,12 +360,12 @@ export const generateGroupedSVG = (svgContent: string): string => {
 };
 
 export const getGroupedPathArray = (svgContent: string, size: number = 512): SVGGroupedItem[] => {
-  const extractor = new SVGStyleExtractor(svgContent);
-  return extractor.getMergedPaths(size);
+  const extractor = new SVGStyleExtractor(svgContent,size);
+  return extractor.getMergedPaths();
 };
 
 export const resizeSVG = (svgContent: string, mergePath: boolean = true, targetSize: number = 512): string => {
-  const extractor = new SVGStyleExtractor(svgContent);
+  const extractor = new SVGStyleExtractor(svgContent, targetSize);
 
   const svgPaths = mergePath
     ? extractor.getMergedPaths()

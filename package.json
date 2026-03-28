@@ -1,6 +1,6 @@
 {
   "name": "kui-icons",
-  "version": "4.3.0",
+  "version": "4.3.1",
   "description": "Ionicons for KUI",
   "main": "dist/kui-icons.cjs.js",
   "module": "dist/kui-icons.esm.js",
@@ -16,7 +16,7 @@
     "build": "npm run build:base && npm run build:next",
     "build:next": "rollup -c --bundleConfigAsCjs",
     "build:base": "tsx index.ts",
-    "type-check": "tsc --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "author": "Qiu",
   "license": "MIT",
@@ -33,15 +33,15 @@
     "@rollup/plugin-commonjs": "^29.0.2",
     "@rollup/plugin-terser": "^1.0.0",
     "@types/jsdom": "^28.0.1",
-    "@types/node": "^22.0.0",
-    "rollup": "^4.59.0",
+    "@types/node": "^22.19.15",
+    "rollup": "^4.60.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "fast-glob": "^3.3.3",
     "jsdom": "^29.0.1",
-    "svg-pathdata": "^8.0.0"
+    "svg-pathdata": "^9.0.0"
   },
   "type": "module"
 }
