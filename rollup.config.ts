@@ -1,6 +1,11 @@
-import pkg from './package.json' with { type: 'json' };
-import terser from '@rollup/plugin-terser';
-import commonjs from '@rollup/plugin-commonjs';
+import commonjs from "@rollup/plugin-commonjs";
+import json from "@rollup/plugin-json";
+import terser from "@rollup/plugin-terser";
+import fs from "fs";
+import path from "path";
+import type { RollupOptions } from "rollup";
+
+const pkg = JSON.parse(fs.readFileSync(path.resolve("package.json"), "utf-8"));
 
 const bannerText = `/*!
  * ${pkg.name} v${pkg.version}
@@ -10,33 +15,32 @@ const bannerText = `/*!
  * Author: Qiu / https://chuchur.com
  */\n`;
 
-export default [
+const config: RollupOptions[] = [
   {
-    input: 'dist/icons.js',
+    input: "dist/icons.js",
     output: [
       {
-        file: 'dist/kui-icons.esm.js',
-        format: 'es',
+        file: "dist/kui-icons.esm.js",
+        format: "es",
         banner: bannerText,
-        exports: 'named'
+        exports: "named",
       },
       {
-        file: 'dist/kui-icons.cjs.js',
-        format: 'cjs',
+        file: "dist/kui-icons.cjs.js",
+        format: "cjs",
         banner: bannerText,
-        exports: 'named'
+        exports: "named",
       },
       {
-        file: 'dist/kui-icons.umd.js',
-        format: 'umd',
-        name: 'kui',
-        exports: 'named',
+        file: "dist/kui-icons.umd.js",
+        format: "umd",
+        name: "kui",
+        exports: "named",
         banner: bannerText,
       },
     ],
-    plugins: [
-      commonjs({ include: 'node_modules/**' }),
-      terser(),
-    ]
+    plugins: [json(), commonjs({ include: "node_modules/**" }), terser()],
   },
 ];
+
+export default config;

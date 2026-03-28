@@ -42,10 +42,12 @@ class SVGStyleExtractor {
       const matches = cssText.matchAll(/\.([^{]+)\s*\{([^}]+)\}/g);
 
       for (const match of matches) {
-        const className = match[1].trim();
-        const styleBody = match[2];
-        const styles = this.parseStyleAttribute(styleBody);
-        rules[className] = styles;
+        if (match && match[1] && match[2]) {
+          const className = match[1].trim();
+          const styleBody = match[2];
+          const styles = this.parseStyleAttribute(styleBody);
+          rules[className] = styles;
+        }
       }
     });
 
@@ -61,7 +63,7 @@ class SVGStyleExtractor {
       if (property && value) {
         const propName = property
           .trim()
-          .replace(/-([a-z])/g, (g: string) => g[1].toUpperCase());
+          .replace(/-([a-z])/g, (_, p) => p.toUpperCase());
         styles[propName] = value.trim();
       }
     });
@@ -90,7 +92,9 @@ class SVGStyleExtractor {
     presentationAttrs.forEach((attr) => {
       const value = element.getAttribute(attr);
       if (value !== null && value !== undefined) {
-        const camelCase = attr.replace(/-([a-z])/g, (g: string) => g[1].toUpperCase());
+        const camelCase = attr.replace(/-([a-z])/g, (_, g: string) =>
+          g.toUpperCase(),
+        );
         stylesFromAttr[camelCase] = value;
       }
     });
@@ -153,8 +157,14 @@ class SVGStyleExtractor {
         let pathData: string;
 
         if (rect.hasAttribute("rx") || rect.hasAttribute("ry")) {
-          const rx = parseFloat(rect.getAttribute("rx") || rect.getAttribute("ry") || "0") || 0;
-          const ry = parseFloat(rect.getAttribute("ry") || rect.getAttribute("rx") || "0") || rx;
+          const rx =
+            parseFloat(
+              rect.getAttribute("rx") || rect.getAttribute("ry") || "0",
+            ) || 0;
+          const ry =
+            parseFloat(
+              rect.getAttribute("ry") || rect.getAttribute("rx") || "0",
+            ) || rx;
 
           const effectiveRx = Math.min(rx, width / 2);
           const effectiveRy = Math.min(ry, height / 2);
@@ -253,10 +263,13 @@ class SVGStyleExtractor {
   }
 
   getMergedPaths(): SVGGroupedItem[] {
-    const size = this.size
+    const size = this.size;
     const allShapes = this.getAllShapesAsPaths();
 
-    const groupedShapes: Record<string, { styles: Record<string, string>; paths: string[] }> = {};
+    const groupedShapes: Record<
+      string,
+      { styles: Record<string, string>; paths: string[] }
+    > = {};
     allShapes.forEach((shape) => {
       const styleKey = getStyleKey(shape.styles);
       if (!groupedShapes[styleKey]) {
@@ -288,15 +301,21 @@ class SVGStyleExtractor {
   getSVGAttributes(): SVGAttributes {
     const svgElement = this.doc.querySelector("svg")!;
 
-    const xmlns = svgElement.getAttribute("xmlns") || "http://www.w3.org/2000/svg";
-    const currentWidth = parseInt(svgElement.getAttribute("width") || "512") || 512;
-    const currentHeight = parseInt(svgElement.getAttribute("height") || "512") || 512;
+    const xmlns =
+      svgElement.getAttribute("xmlns") || "http://www.w3.org/2000/svg";
+    const currentWidth =
+      parseInt(svgElement.getAttribute("width") || "512") || 512;
+    const currentHeight =
+      parseInt(svgElement.getAttribute("height") || "512") || 512;
 
     let viewBox = svgElement.getAttribute("viewBox");
     if (!viewBox) {
       viewBox = `0 0 ${currentWidth} ${currentHeight}`;
     }
-    const [vx, vy, vw, vh] = viewBox.split(/\s+/).map(Number);
+    const size = this.size;
+    const [vx = 0, vy = 0, vw = size, vh = size] = viewBox
+      .split(/\s+/)
+      .map(Number);
 
     return {
       xmlns,
@@ -309,7 +328,11 @@ class SVGStyleExtractor {
   }
 }
 
-const viewBoxTransform = (pathData: string, scaleX: number, scaleY: number): string => {
+const viewBoxTransform = (
+  pathData: string,
+  scaleX: number,
+  scaleY: number,
+): string => {
   const paths = new SVGPathData(pathData)
     .scale(scaleX, scaleY)
     .round(2)
@@ -318,18 +341,20 @@ const viewBoxTransform = (pathData: string, scaleX: number, scaleY: number): str
   return paths;
 };
 
-export const formatStyleAttribute = (styles: Record<string, string>): string => {
+export const formatStyleAttribute = (
+  styles: Record<string, string>,
+): string => {
   return Object.entries(styles)
     .map(
       ([key, value]) =>
-        `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}:${value}`
+        `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}:${value}`,
     )
     .join(";");
 };
 
 const getStyleKey = (styles: Record<string, string>): string => {
   const sortedEntries = Object.entries(styles).sort(([a], [b]) =>
-    a.localeCompare(b)
+    a.localeCompare(b),
   );
   return JSON.stringify(sortedEntries);
 };
@@ -359,12 +384,19 @@ export const generateGroupedSVG = (svgContent: string): string => {
   return newSVG;
 };
 
-export const getGroupedPathArray = (svgContent: string, size: number = 512): SVGGroupedItem[] => {
-  const extractor = new SVGStyleExtractor(svgContent,size);
+export const getGroupedPathArray = (
+  svgContent: string,
+  size: number = 512,
+): SVGGroupedItem[] => {
+  const extractor = new SVGStyleExtractor(svgContent, size);
   return extractor.getMergedPaths();
 };
 
-export const resizeSVG = (svgContent: string, mergePath: boolean = true, targetSize: number = 512): string => {
+export const resizeSVG = (
+  svgContent: string,
+  mergePath: boolean = true,
+  targetSize: number = 512,
+): string => {
   const extractor = new SVGStyleExtractor(svgContent, targetSize);
 
   const svgPaths = mergePath

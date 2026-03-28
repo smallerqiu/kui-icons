@@ -1,4 +1,4 @@
-import { resizeSVG } from "../utils/parse.js";
+import { resizeSVG } from "../utils/parse";
 
 let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
     <ellipse cx="256" cy="128" rx="192" ry="80" style="fill:none;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px"/>

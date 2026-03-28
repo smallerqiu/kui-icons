@@ -9,7 +9,7 @@ fs.writeFileSync("./dist/icons.js", pathList.join("\n"));
 const iconNames: string[] = [];
 pathList.forEach((line) => {
   const match = line.match(/export const (\w+) = /);
-  if (match) iconNames.push(match[1]);
+  if (match && match[1]) iconNames.push(match[1]);
 });
 
 const typeDeclaration = `/**
@@ -25,7 +25,6 @@ export interface SVGPathItem {
 }
 ${iconNames.map(name => `export const ${name}: SVGPathItem[];`).join('\n')}
 `;
-
 fs.writeFileSync("./dist/index.d.ts", typeDeclaration);
 
 // output svg sprite

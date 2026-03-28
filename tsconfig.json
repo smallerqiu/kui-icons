@@ -2,20 +2,38 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "ESNext",
-    "lib": ["ES2020"],
     "moduleResolution": "bundler",
-    "declaration": true,
-    "declarationDir": "./dist/types",
-    "outDir": "./dist",
-    "rootDir": ".",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "strict": true,
-    "esModuleInterop": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "allowJs": true,
     "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": false,
+    "jsx": "preserve",
+    "jsxImportSource": "vue",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "types": ["node", "jsdom"]
+    "isolatedModules": true,
+    "noEmit": true,
+    "useUnknownInCatchVariables": false,
+    "types": [
+      "node",
+    ]
   },
-  "include": ["utils/**/*", "index.ts"],
-  "exclude": ["node_modules", "dist", "source", "test"]
+  "include": [
+    "*.ts",
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "docs",
+  ]
 }
