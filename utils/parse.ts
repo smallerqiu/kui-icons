@@ -25,12 +25,41 @@ class SVGStyleExtractor {
   private size: number;
   public doc: Document;
   private cssRules: Record<string, Record<string, string>>;
+  private rootStyles: Record<string, string>;
 
   constructor(svgContent: string, size: number = 24) {
     this.size = size;
     const dom = new JSDOM(svgContent);
     this.doc = dom.window.document;
     this.cssRules = this.extractCSSRules();
+
+    const svgElement = this.doc.querySelector("svg");
+    this.rootStyles = svgElement ? this.getBasicAttributes(svgElement) : {};
+  }
+
+  private getBasicAttributes(element: Element): Record<string, string> {
+    const attrs = [
+      "fill",
+      "stroke",
+      "stroke-width",
+      "stroke-linecap",
+      "stroke-linejoin",
+      "stroke-miterlimit",
+      "stroke-dasharray",
+      "stroke-dashoffset",
+      "fill-opacity",
+      "stroke-opacity",
+      "opacity",
+    ];
+    const styles: Record<string, string> = {};
+    attrs.forEach((attr) => {
+      const value = element.getAttribute(attr);
+      if (value !== null) {
+        const camelCase = attr.replace(/-([a-z])/g, (_, g) => g.toUpperCase());
+        styles[camelCase] = value;
+      }
+    });
+    return styles;
   }
 
   extractCSSRules(): Record<string, Record<string, string>> {
@@ -72,46 +101,26 @@ class SVGStyleExtractor {
   }
 
   getElementStyles(element: Element): Record<string, string> {
-    const finalStyles: Record<string, string> = {};
+    // 3. 修改合并顺序：先拿根节点样式打底，再被子元素自身的属性覆盖
+    const finalStyles: Record<string, string> = Object.assign(
+      {},
+      this.rootStyles,
+    );
 
-    const presentationAttrs = [
-      "fill",
-      "stroke",
-      "stroke-width",
-      "stroke-linecap",
-      "stroke-linejoin",
-      "stroke-miterlimit",
-      "stroke-dasharray",
-      "stroke-dashoffset",
-      "fill-opacity",
-      "stroke-opacity",
-      "opacity",
-    ];
-
-    const stylesFromAttr: Record<string, string> = {};
-    presentationAttrs.forEach((attr) => {
-      const value = element.getAttribute(attr);
-      if (value !== null && value !== undefined) {
-        const camelCase = attr.replace(/-([a-z])/g, (_, g: string) =>
-          g.toUpperCase(),
-        );
-        stylesFromAttr[camelCase] = value;
-      }
-    });
-
+    // 提取当前元素自身的属性
+    const stylesFromAttr = this.getBasicAttributes(element);
     Object.assign(finalStyles, stylesFromAttr);
 
+    // 提取 Class 样式
     const classList = (element.getAttribute("class") || "")
       .split(/\s+/)
       .filter(Boolean);
-
     classList.forEach((cls: string) => {
       const classStyles = this.cssRules[cls];
-      if (classStyles) {
-        Object.assign(finalStyles, classStyles);
-      }
+      if (classStyles) Object.assign(finalStyles, classStyles);
     });
 
+    // 提取内联 Style
     const inlineStyle = element.getAttribute("style") || "";
     const inlineStyles = this.parseStyleAttribute(inlineStyle);
     Object.assign(finalStyles, inlineStyles);
@@ -122,221 +131,142 @@ class SVGStyleExtractor {
   getAllShapesAsPaths(): SVGPathItem[] {
     const shapes: SVGPathItem[] = [];
 
-    Array.from(this.doc.querySelectorAll("path")).forEach((path) => {
-      const d = path.getAttribute("d") || "";
-      if (d.trim()) {
-        shapes.push({
-          d: d.replace(/[\t\n\r]+/g, " ").trim(),
-          styles: this.getElementStyles(path),
-          type: "path",
-        });
-      }
-    });
+    // 统一处理所有形状并转换为 path data
+    this.doc
+      .querySelectorAll("path, line, rect, circle, ellipse, polyline, polygon")
+      .forEach((el) => {
+        let d = "";
+        const type = el.tagName.toLowerCase();
 
-    Array.from(this.doc.querySelectorAll("line")).forEach((line) => {
-      const x1 = parseFloat(line.getAttribute("x1") || "0") || 0;
-      const y1 = parseFloat(line.getAttribute("y1") || "0") || 0;
-      const x2 = parseFloat(line.getAttribute("x2") || "0") || 0;
-      const y2 = parseFloat(line.getAttribute("y2") || "0") || 0;
+        if (type === "path") {
+          d = el.getAttribute("d") || "";
+        } else if (type === "line") {
+          const x1 = el.getAttribute("x1") || "0",
+            y1 = el.getAttribute("y1") || "0";
+          const x2 = el.getAttribute("x2") || "0",
+            y2 = el.getAttribute("y2") || "0";
+          d = `M ${x1} ${y1} L ${x2} ${y2}`;
+        } else if (type === "rect") {
+          const x = parseFloat(el.getAttribute("x") || "0"),
+            y = parseFloat(el.getAttribute("y") || "0");
+          const w = parseFloat(el.getAttribute("width") || "0"),
+            h = parseFloat(el.getAttribute("height") || "0");
+          const rx = parseFloat(
+            el.getAttribute("rx") || el.getAttribute("ry") || "0",
+          );
+          const ry = parseFloat(
+            el.getAttribute("ry") || el.getAttribute("rx") || "0",
+          );
+          if (rx > 0 || ry > 0) {
+            const rX = Math.min(rx, w / 2),
+              rY = Math.min(ry, h / 2);
+            d = `M ${x + rX} ${y} H ${x + w - rX} A ${rX} ${rY} 0 0 1 ${x + w} ${y + rY} V ${y + h - rY} A ${rX} ${rY} 0 0 1 ${x + w - rX} ${y + h} H ${x + rX} A ${rX} ${rY} 0 0 1 ${x} ${y + h - rY} V ${y + rY} A ${rX} ${rY} 0 0 1 ${x + rX} ${y} Z`;
+          } else {
+            d = `M ${x} ${y} H ${x + w} V ${y + h} H ${x} Z`;
+          }
+        } else if (type === "circle") {
+          const cx = el.getAttribute("cx") || "0",
+            cy = el.getAttribute("cy") || "0",
+            r = el.getAttribute("r") || "0";
+          d = `M ${+cx - +r} ${cy} A ${r} ${r} 0 1 0 ${+cx + +r} ${cy} A ${r} ${r} 0 1 0 ${+cx - +r} ${cy} Z`;
+        } else if (type === "ellipse") {
+          const cx = el.getAttribute("cx") || "0",
+            cy = el.getAttribute("cy") || "0",
+            rx = el.getAttribute("rx") || "0",
+            ry = el.getAttribute("ry") || "0";
+          d = `M ${+cx - +rx} ${cy} A ${rx} ${ry} 0 1 0 ${+cx + +rx} ${cy} A ${rx} ${ry} 0 1 0 ${+cx - +rx} ${cy} Z`;
+        } else if (type === "polyline" || type === "polygon") {
+          const points = (el.getAttribute("points") || "")
+            .trim()
+            .split(/[\s,]+/)
+            .filter(Boolean);
+          if (points.length >= 2) {
+            d = `M ${points[0]} ${points[1]}`;
+            for (let i = 2; i < points.length; i += 2)
+              d += ` L ${points[i]} ${points[i + 1]}`;
+            if (type === "polygon") d += " Z";
+          }
+        }
 
-      const pathData = `M ${x1} ${y1} L ${x2} ${y2}`;
-      shapes.push({
-        d: pathData,
-        styles: this.getElementStyles(line),
-        type: "line",
+        if (d.trim()) {
+          shapes.push({
+            d: d.replace(/[\t\n\r]+/g, " ").trim(),
+            styles: this.getElementStyles(el),
+            type,
+          });
+        }
       });
-    });
 
-    Array.from(this.doc.querySelectorAll("rect")).forEach((rect) => {
-      const x = parseFloat(rect.getAttribute("x") || "0") || 0;
-      const y = parseFloat(rect.getAttribute("y") || "0") || 0;
-      const width = parseFloat(rect.getAttribute("width") || "0") || 0;
-      const height = parseFloat(rect.getAttribute("height") || "0") || 0;
-
-      if (width > 0 && height > 0) {
-        let pathData: string;
-
-        if (rect.hasAttribute("rx") || rect.hasAttribute("ry")) {
-          const rx =
-            parseFloat(
-              rect.getAttribute("rx") || rect.getAttribute("ry") || "0",
-            ) || 0;
-          const ry =
-            parseFloat(
-              rect.getAttribute("ry") || rect.getAttribute("rx") || "0",
-            ) || rx;
-
-          const effectiveRx = Math.min(rx, width / 2);
-          const effectiveRy = Math.min(ry, height / 2);
-
-          pathData = `M ${x + effectiveRx} ${y} H ${x + width - effectiveRx} A ${effectiveRx} ${effectiveRy} 0 0 1 ${x + width} ${y + effectiveRy} V ${y + height - effectiveRy} A ${effectiveRx} ${effectiveRy} 0 0 1 ${x + width - effectiveRx} ${y + height} H ${x + effectiveRx} A ${effectiveRx} ${effectiveRy} 0 0 1 ${x} ${y + height - effectiveRy} V ${y + effectiveRy} A ${effectiveRx} ${effectiveRy} 0 0 1 ${x + effectiveRx} ${y} Z`;
-        } else {
-          pathData = `M ${x} ${y} H ${x + width} V ${y + height} H ${x} Z`;
-        }
-
-        shapes.push({
-          d: pathData,
-          styles: this.getElementStyles(rect),
-          type: "rect",
-        });
-      }
-    });
-
-    Array.from(this.doc.querySelectorAll("circle")).forEach((circle) => {
-      const cx = parseFloat(circle.getAttribute("cx") || "0") || 0;
-      const cy = parseFloat(circle.getAttribute("cy") || "0") || 0;
-      const r = parseFloat(circle.getAttribute("r") || "0") || 0;
-
-      if (r > 0) {
-        const pathData = `M ${cx - r} ${cy} A ${r} ${r} 0 1 0 ${cx + r} ${cy} A ${r} ${r} 0 1 0 ${cx - r} ${cy} Z`;
-        shapes.push({
-          d: pathData,
-          styles: this.getElementStyles(circle),
-          type: "circle",
-        });
-      }
-    });
-
-    Array.from(this.doc.querySelectorAll("ellipse")).forEach((ellipse) => {
-      const cx = parseFloat(ellipse.getAttribute("cx") || "0") || 0;
-      const cy = parseFloat(ellipse.getAttribute("cy") || "0") || 0;
-      const rx = parseFloat(ellipse.getAttribute("rx") || "0") || 0;
-      const ry = parseFloat(ellipse.getAttribute("ry") || "0") || 0;
-
-      if (rx > 0 && ry > 0) {
-        const pathData = `M ${cx - rx} ${cy} A ${rx} ${ry} 0 1 0 ${cx + rx} ${cy} A ${rx} ${ry} 0 1 0 ${cx - rx} ${cy} Z`;
-        shapes.push({
-          d: pathData,
-          styles: this.getElementStyles(ellipse),
-          type: "ellipse",
-        });
-      }
-    });
-
-    Array.from(this.doc.querySelectorAll("polyline")).forEach((polyline) => {
-      const points = polyline.getAttribute("points") || "";
-      if (points.trim()) {
-        const coords = points.trim().split(/[\s,]+/);
-        if (coords.length >= 2) {
-          let pathData = `M ${coords[0]} ${coords[1]}`;
-          for (let i = 2; i < coords.length; i += 2) {
-            if (i + 1 < coords.length) {
-              pathData += ` L ${coords[i]} ${coords[i + 1]}`;
-            }
-          }
-
-          shapes.push({
-            d: pathData,
-            styles: this.getElementStyles(polyline),
-            type: "polyline",
-          });
-        }
-      }
-    });
-
-    Array.from(this.doc.querySelectorAll("polygon")).forEach((polygon) => {
-      const points = polygon.getAttribute("points") || "";
-      if (points.trim()) {
-        const coords = points
-          .trim()
-          .split(/\s+/)
-          .filter((coord: string) => coord);
-        if (coords.length >= 2) {
-          let pathData = `M ${coords[0]} ${coords[1]}`;
-          for (let i = 2; i < coords.length; i += 2) {
-            if (i + 1 < coords.length) {
-              pathData += ` L ${coords[i]} ${coords[i + 1]}`;
-            }
-          }
-          pathData += " Z";
-
-          shapes.push({
-            d: pathData,
-            styles: this.getElementStyles(polygon),
-            type: "polygon",
-          });
-        }
-      }
-    });
-
-    return shapes.filter((shape) => shape.d && shape.d.trim());
+    return shapes;
   }
 
   getMergedPaths(): SVGGroupedItem[] {
-    const size = this.size;
     const allShapes = this.getAllShapesAsPaths();
-
     const groupedShapes: Record<
       string,
       { styles: Record<string, string>; paths: string[] }
     > = {};
+
     allShapes.forEach((shape) => {
       const styleKey = getStyleKey(shape.styles);
       if (!groupedShapes[styleKey]) {
-        groupedShapes[styleKey] = {
-          styles: shape.styles,
-          paths: [],
-        };
+        groupedShapes[styleKey] = { styles: shape.styles, paths: [] };
       }
       groupedShapes[styleKey].paths.push(shape.d);
     });
 
     const { vw, vh } = this.getSVGAttributes();
-    const result = Object.values(groupedShapes).map((group) => {
-      let d = group.paths.join(" ");
-      if (size) {
-        const scaleX = size / vw;
-        const scaleY = size / vh;
-        d = viewBoxTransform(d, scaleX, scaleY);
-      }
+    const scaleX = this.size / vw;
+    const scaleY = this.size / vh;
+
+    return Object.values(groupedShapes).map((group) => {
+      // 修复核心：合并前先对每一条路径转绝对坐标并缩放
+      const absolutePaths = group.paths.map((pathStr) =>
+        viewBoxTransform(pathStr, scaleX, scaleY),
+      );
+
       return {
-        d,
+        d: absolutePaths.join(" "),
         styles: group.styles,
       };
     });
-
-    return result;
   }
 
   getSVGAttributes(): SVGAttributes {
     const svgElement = this.doc.querySelector("svg")!;
-
     const xmlns =
       svgElement.getAttribute("xmlns") || "http://www.w3.org/2000/svg";
     const currentWidth = parseInt(svgElement.getAttribute("width") || "24");
     const currentHeight = parseInt(svgElement.getAttribute("height") || "24");
+    let viewBox =
+      svgElement.getAttribute("viewBox") ||
+      `0 0 ${currentWidth} ${currentHeight}`;
+    const [vx = 0, vy = 0, vw = 24, vh = 24] = viewBox.split(/\s+/).map(Number);
 
-    let viewBox = svgElement.getAttribute("viewBox");
-    if (!viewBox) {
-      viewBox = `0 0 ${currentWidth} ${currentHeight}`;
-    }
-    const size = this.size;
-    const [vx = 0, vy = 0, vw = size, vh = size] = viewBox
-      .split(/\s+/)
-      .map(Number);
-
-    return {
-      xmlns,
-      viewBox,
-      vx,
-      vy,
-      vw,
-      vh,
-    };
+    return { xmlns, viewBox, vx, vy, vw, vh };
   }
 }
 
+/**
+ * 修复函数：转换绝对坐标，处理缩放，提高精度
+ */
 const viewBoxTransform = (
   pathData: string,
   scaleX: number,
   scaleY: number,
 ): string => {
-  const paths = new SVGPathData(pathData)
-    .scale(scaleX, scaleY)
-    .round(2)
-    .encode()
-    .toString();
-  return paths;
+  try {
+    return new SVGPathData(pathData)
+      .toAbs() // 必须转为绝对坐标，否则合并后相对坐标会出错
+      .scale(scaleX, scaleY)
+      .round(4) // 提高精度到3位，防止 0.923 这种坐标丢失
+      .encode()
+      .replace(/([A-Za-z])\s+/g, "$1") // 移除指令后的多余空格
+      .replace(/\s+/g, " ") // 合并连续空格
+      .trim();
+  } catch (e) {
+    return pathData;
+  }
 };
 
 export const formatStyleAttribute = (
@@ -351,35 +281,9 @@ export const formatStyleAttribute = (
 };
 
 const getStyleKey = (styles: Record<string, string>): string => {
-  const sortedEntries = Object.entries(styles).sort(([a], [b]) =>
-    a.localeCompare(b),
+  return JSON.stringify(
+    Object.entries(styles).sort(([a], [b]) => a.localeCompare(b)),
   );
-  return JSON.stringify(sortedEntries);
-};
-
-export const generateGroupedSVG = (svgContent: string): string => {
-  const extractor = new SVGStyleExtractor(svgContent);
-  const svgElement = extractor.doc.querySelector("svg")!;
-
-  const svgAttrs = {
-    xmlns: svgElement.getAttribute("xmlns"),
-    width: svgElement.getAttribute("width"),
-    height: svgElement.getAttribute("height"),
-    viewBox: svgElement.getAttribute("viewBox"),
-  };
-
-  const groupedPaths = extractor.getMergedPaths();
-
-  let newSVG = `<svg xmlns="${svgAttrs.xmlns}" width="${svgAttrs.width}" height="${svgAttrs.height}" viewBox="${svgAttrs.viewBox}">`;
-
-  groupedPaths.forEach((item) => {
-    const styleString = formatStyleAttribute(item.styles);
-    newSVG += `\n  <path d="${item.d}" style="${styleString}"/>`;
-  });
-
-  newSVG += "\n</svg>";
-
-  return newSVG;
 };
 
 export const getGroupedPathArray = (
@@ -388,35 +292,4 @@ export const getGroupedPathArray = (
 ): SVGGroupedItem[] => {
   const extractor = new SVGStyleExtractor(svgContent, size);
   return extractor.getMergedPaths();
-};
-
-export const resizeSVG = (
-  svgContent: string,
-  mergePath: boolean = true,
-  targetSize: number = 24,
-): string => {
-  const extractor = new SVGStyleExtractor(svgContent, targetSize);
-
-  const svgPaths = mergePath
-    ? extractor.getMergedPaths()
-    : extractor.getAllShapesAsPaths();
-
-  let { viewBox, xmlns, vw, vh } = extractor.getSVGAttributes();
-  if (vw !== targetSize || vh !== targetSize) {
-    const scaleX = targetSize / vw;
-    const scaleY = targetSize / vh;
-
-    const scaledSvgPaths = svgPaths.map((item) => ({
-      d: viewBoxTransform(item.d, scaleX, scaleY),
-      styles: item.styles,
-    }));
-
-    return `<svg xmlns="${xmlns}" width="${targetSize}" height="${targetSize}" viewBox="${viewBox}">
-${scaledSvgPaths.map((item) => `  <path d="${item.d}" style="${formatStyleAttribute(item.styles)}"/>`).join("\n")}
-</svg>`;
-  }
-
-  return `<svg xmlns="${xmlns}" width="${targetSize}" height="${targetSize}" viewBox="${viewBox}">
-${svgPaths.map((item) => `  <path d="${item.d}" style="${formatStyleAttribute(item.styles)}"/>`).join("\n")}
-</svg>`;
 };

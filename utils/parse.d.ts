@@ -16,6 +16,4 @@ export interface SVGAttributes {
     vh: number;
 }
 export declare const formatStyleAttribute: (styles: Record<string, string>) => string;
-export declare const generateGroupedSVG: (svgContent: string) => string;
 export declare const getGroupedPathArray: (svgContent: string, size?: number) => SVGGroupedItem[];
-export declare const resizeSVG: (svgContent: string, mergePath?: boolean, targetSize?: number) => string;

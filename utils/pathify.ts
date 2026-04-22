@@ -30,17 +30,16 @@ export const generate = (inputPath: string): GenerateResult => {
     const pascalName = toPascalCase(name);
 
     const svgContent = fs.readFileSync(file, "utf-8");
-    const array: SVGGroupedItem[] = getGroupedPathArray(svgContent);
+    // 默认输出 24x24 规格的路径
+    const array: SVGGroupedItem[] = getGroupedPathArray(svgContent, 24);
 
     const items: string[] = [];
     const paths: string[] = [];
 
     array.forEach((item) => {
+      // 保持你原有的 currentColor 逻辑
       let { fill = "", stroke = "" } = item.styles;
-
-      if (stroke && stroke !== "none") {
-        item.styles.stroke = "currentcolor";
-      }
+      if (stroke && stroke !== "none") item.styles.stroke = "currentcolor";
       if ((fill && fill !== "none") || Object.keys(item.styles).length === 0) {
         item.styles.fill = "currentcolor";
       }
@@ -55,11 +54,8 @@ export const generate = (inputPath: string): GenerateResult => {
       `<symbol id="${pascalName}" viewBox="0 0 24 24">${paths.join("")}</symbol>`,
     );
 
-    console.log(`output: ${pascalName}`);
+    console.log(`Successfully pathified: ${pascalName}`);
   }
 
-  return {
-    pathList,
-    spriteList,
-  };
+  return { pathList, spriteList };
 };
