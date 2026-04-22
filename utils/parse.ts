@@ -26,7 +26,7 @@ class SVGStyleExtractor {
   public doc: Document;
   private cssRules: Record<string, Record<string, string>>;
 
-  constructor(svgContent: string, size: number = 512) {
+  constructor(svgContent: string, size: number = 24) {
     this.size = size;
     const dom = new JSDOM(svgContent);
     this.doc = dom.window.document;
@@ -303,10 +303,8 @@ class SVGStyleExtractor {
 
     const xmlns =
       svgElement.getAttribute("xmlns") || "http://www.w3.org/2000/svg";
-    const currentWidth =
-      parseInt(svgElement.getAttribute("width") || "512") || 512;
-    const currentHeight =
-      parseInt(svgElement.getAttribute("height") || "512") || 512;
+    const currentWidth = parseInt(svgElement.getAttribute("width") || "24");
+    const currentHeight = parseInt(svgElement.getAttribute("height") || "24");
 
     let viewBox = svgElement.getAttribute("viewBox");
     if (!viewBox) {
@@ -386,7 +384,7 @@ export const generateGroupedSVG = (svgContent: string): string => {
 
 export const getGroupedPathArray = (
   svgContent: string,
-  size: number = 512,
+  size: number = 24,
 ): SVGGroupedItem[] => {
   const extractor = new SVGStyleExtractor(svgContent, size);
   return extractor.getMergedPaths();
@@ -395,7 +393,7 @@ export const getGroupedPathArray = (
 export const resizeSVG = (
   svgContent: string,
   mergePath: boolean = true,
-  targetSize: number = 512,
+  targetSize: number = 24,
 ): string => {
   const extractor = new SVGStyleExtractor(svgContent, targetSize);
 

@@ -1,7 +1,11 @@
-import path from "path";
-import fs from "fs";
-import { getGroupedPathArray, formatStyleAttribute, SVGGroupedItem } from "./parse";
 import glob from "fast-glob";
+import fs from "fs";
+import path from "path";
+import {
+  formatStyleAttribute,
+  getGroupedPathArray,
+  SVGGroupedItem,
+} from "./parse";
 
 const toPascalCase = (str: string = ""): string => {
   return str
@@ -48,7 +52,7 @@ export const generate = (inputPath: string): GenerateResult => {
 
     pathList.push(`export const ${pascalName} = [${items}]`);
     spriteList.push(
-      `<symbol id="${pascalName}" viewBox="0 0 512 512">${paths.join("")}</symbol>`
+      `<symbol id="${pascalName}" viewBox="0 0 24 24">${paths.join("")}</symbol>`,
     );
 
     console.log(`output: ${pascalName}`);

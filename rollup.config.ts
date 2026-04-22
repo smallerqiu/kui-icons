@@ -15,31 +15,39 @@ const bannerText = `/*!
  * Author: Qiu / https://chuchur.com
  */\n`;
 
+const basePlugins = [json(), commonjs({ include: "node_modules/**" })];
+
 const config: RollupOptions[] = [
   {
     input: "dist/icons.js",
-    output: [
-      {
-        file: "dist/kui-icons.esm.js",
-        format: "es",
-        banner: bannerText,
-        exports: "named",
-      },
-      {
-        file: "dist/kui-icons.cjs.js",
-        format: "cjs",
-        banner: bannerText,
-        exports: "named",
-      },
-      {
-        file: "dist/kui-icons.umd.js",
-        format: "umd",
-        name: "kui",
-        exports: "named",
-        banner: bannerText,
-      },
-    ],
-    plugins: [json(), commonjs({ include: "node_modules/**" }), terser()],
+    output: {
+      file: "dist/kui-icons.esm.js",
+      format: "es",
+      banner: bannerText,
+      exports: "named",
+    },
+    plugins: basePlugins,
+  },
+  {
+    input: "dist/icons.js",
+    output: {
+      file: "dist/kui-icons.cjs.js",
+      format: "cjs",
+      banner: bannerText,
+      exports: "named",
+    },
+    plugins: basePlugins,
+  },
+  {
+    input: "dist/icons.js",
+    output: {
+      file: "dist/kui-icons.umd.js",
+      format: "umd",
+      name: "kui",
+      exports: "named",
+      banner: bannerText,
+    },
+    plugins: [...basePlugins, terser()],
   },
 ];
 
