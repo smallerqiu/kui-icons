@@ -1,14 +1,13 @@
 {
   "name": "kui-icons",
   "version": "5.0.0",
-  "description": "Ionicons for KUI",
+  "description": "A set of svg icons for KUI",
   "main": "dist/kui-icons.cjs.js",
   "module": "dist/kui-icons.esm.js",
   "types": "dist/index.d.ts",
   "unpkg": "dist/kui-icons.umd.js",
   "jsdelivr": "dist/kui-icons.umd.js",
   "files": [
-    "source",
     "dist",
     "utils"
   ],

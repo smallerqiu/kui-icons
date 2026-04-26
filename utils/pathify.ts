@@ -7,7 +7,7 @@ import {
   SVGGroupedItem,
 } from "./parse";
 
-const toPascalCase = (str: string = ""): string => {
+export const toPascalCase = (str: string = ""): string => {
   return str
     .split("-")
     .filter((word) => word.length > 0)
